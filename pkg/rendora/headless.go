@@ -22,6 +22,8 @@ import (
 	"net/url"
 	"sync"
 	"time"
+	"fmt"
+	"strings"
 
 	"github.com/mafredri/cdp"
 	"github.com/mafredri/cdp/devtool"
@@ -220,13 +222,13 @@ func (c *headlessClient) getResponse(uri string) (*HeadlessResponse, error) {
 	}
 
 	// Fetch all <script> and <noscript> elements so we can delete them.
-    scriptIDs, err := c.DOM.QuerySelectorAll(ctx, dom.NewQuerySelectorAllArgs(doc.Root.NodeID, "script, style, svg"))
+    scriptIDs, err := c.C.DOM.QuerySelectorAll(ctx, dom.NewQuerySelectorAllArgs(doc.Root.NodeID, "script, style, svg"))
     if err != nil {
         fmt.Println(err)
         return err
     }
 
-    if err = removeNodes(ctx, c.DOM, scriptIDs.NodeIDs...); err != nil {
+    if err = removeNodes(ctx, c.C.DOM, scriptIDs.NodeIDs...); err != nil {
         fmt.Println(err)
         return err
     }
