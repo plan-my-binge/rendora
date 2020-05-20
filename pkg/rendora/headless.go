@@ -263,6 +263,17 @@ func (c *headlessClient) getResponse(uri string) (*HeadlessResponse, error) {
 }
 
 
+// removeNodes deletes all provided nodeIDs from the DOM.
+func removeNodes(ctx context.Context, domClient cdp.DOM, nodes ...dom.NodeID) error {
+	var rmNodes []runBatchFunc
+	for _, id := range nodes {
+		arg := dom.NewRemoveNodeArgs(id)
+		rmNodes = append(rmNodes, func() error { return domClient.RemoveNode(ctx, arg) })
+	}
+	return runBatch(rmNodes...)
+}
+
+
 type runBatchFunc func() error
 
 // runBatch runs all functions simultaneously and waits until

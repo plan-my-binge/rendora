@@ -1,6 +1,6 @@
 
 VERSION ?= $(shell git describe --always)
-GOVERSION ?= $(shell go version)
+GOVERSION ?= $(shell /usr/local/go/bin/go version)
 
 PREFIX ?= /usr
 BINPREFIX ?= $(PREFIX)/bin
@@ -8,7 +8,7 @@ PROGRAM := rendora
 
 build:
 	cd ./cmd/rendora; \
-	CGO_ENABLED=0 go build -ldflags "-X main.VERSION=$(VERSION)"
+	CGO_ENABLED=0 /usr/local/go/bin/go build -ldflags "-X main.VERSION=$(VERSION)"
 
 install:
 	mkdir -p "$(DESTDIR)$(BINPREFIX)"
