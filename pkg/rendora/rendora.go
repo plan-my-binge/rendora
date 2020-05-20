@@ -47,11 +47,8 @@ func (R *Rendora) middleware() gin.HandlerFunc {
 			return
 		}
 
-		if R.isWhitelisted(c) {
-			R.getSSR(c)
-		} else {
-			R.getProxy(c)
-		}
+
+		R.getSSR(c)
 
 		if R.c.Server.Enable {
 			R.metrics.CountTotal.Inc()
