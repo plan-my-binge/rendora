@@ -225,12 +225,12 @@ func (c *headlessClient) getResponse(uri string) (*HeadlessResponse, error) {
     scriptIDs, err := c.C.DOM.QuerySelectorAll(ctx, dom.NewQuerySelectorAllArgs(doc.Root.NodeID, "script, style, svg"))
     if err != nil {
         fmt.Println(err)
-        return err
+        return nil, err
     }
 
     if err = removeNodes(ctx, c.C.DOM, scriptIDs.NodeIDs...); err != nil {
         fmt.Println(err)
-        return err
+        return nil, err
     }
 
 	domResponse, err := c.C.DOM.GetOuterHTML(ctx, &dom.GetOuterHTMLArgs{
