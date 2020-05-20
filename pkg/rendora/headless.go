@@ -29,6 +29,8 @@ import (
 	"github.com/mafredri/cdp/protocol/network"
 	"github.com/mafredri/cdp/protocol/page"
 	"github.com/mafredri/cdp/rpcc"
+
+	"golang.org/x/sync/errgroup"
 )
 
 var defaultBlockedURLs []string
@@ -217,6 +219,18 @@ func (c *headlessClient) getResponse(uri string) (*HeadlessResponse, error) {
 		return nil, err
 	}
 
+	// Fetch all <script> and <noscript> elements so we can delete them.
+    scriptIDs, err := c.DOM.QuerySelectorAll(ctx, dom.NewQuerySelectorAllArgs(doc.Root.NodeID, "script, style, svg"))
+    if err != nil {
+        fmt.Println(err)
+        return err
+    }
+
+    if err = removeNodes(ctx, c.DOM, scriptIDs.NodeIDs...); err != nil {
+        fmt.Println(err)
+        return err
+    }
+
 	domResponse, err := c.C.DOM.GetOuterHTML(ctx, &dom.GetOuterHTMLArgs{
 		NodeID: &doc.Root.NodeID,
 	})
@@ -244,4 +258,17 @@ func (c *headlessClient) getResponse(uri string) (*HeadlessResponse, error) {
 	}
 
 	return ret, nil
+}
+
+
+type runBatchFunc func() error
+
+// runBatch runs all functions simultaneously and waits until
+// execution has completed or an error is encountered.
+func runBatch(fn ...runBatchFunc) error {
+	eg := errgroup.Group{}
+	for _, f := range fn {
+		eg.Go(f)
+	}
+	return eg.Wait()
 }
