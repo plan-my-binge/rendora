@@ -178,8 +178,9 @@ func (c *headlessClient) getResponse(uri string) (*HeadlessResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.rendora.c.Headless.Timeout)*time.Second)
 	defer cancel()
 
+    uriUpdated := strings.Replace(uri, "/ssr", "", 1)
 	timeStart := time.Now()
-	navArgs := page.NewNavigateArgs(uri)
+	navArgs := page.NewNavigateArgs(uriUpdated)
 	networkResponse, err := c.C.Network.ResponseReceived(ctx)
 	if err != nil {
 		return nil, err
